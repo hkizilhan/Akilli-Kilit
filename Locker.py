@@ -1,9 +1,21 @@
-import hashlib, time
+import hashlib, time, subprocess
 from winreg import *
-from subprocess import call
 import tkinter as tk
 
-DEBUG=False
+DEBUG=True
+
+# No cable
+#   Medya Durumu  . . . . . . . . . . : Medya Bağlantısı kesildi
+#print(lines[6])  # check for "kesildi" keyword
+def check_cable_connected():
+    msg = subprocess.check_output("ipconfig")
+    msg = msg.decode("cp857")
+    lines = msg.splitlines()
+    if "kesildi" in lines[6]:
+        return False
+    else:
+        return True
+
 
 def get_usb_serial():
     Registry = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -52,7 +64,7 @@ class Locker_Window():
 
         self.check_seconds = 5000 # check every 5 secons
         self.shutdown_seconds = 0
-        self.shutdown_seconds_limit = 25
+        self.shutdown_seconds_limit = 30
         
         self.state = False
         self.visible = True
@@ -74,10 +86,14 @@ class Locker_Window():
 
     def main_timer(self):
         key_present = self.check_usb()
-        if key_present:
+        cable_connected = check_cable_connected()
+        
+        if key_present and cable_connected:
+            print("MATCH DETECTED, UNLOCK")
             self.unlock()
             self.shutdown_seconds = 0
         else:
+            print("LOCKED")
             self.lock()
             self.shutdown_seconds += (self.check_seconds / 1000)
             if self.shutdown_seconds > self.shutdown_seconds_limit:
@@ -97,15 +113,12 @@ class Locker_Window():
         k_name, k_data = get_usb_key()
         
         if k_name == None:
-            print("LOCKED")
             return False
 
         key=generate_key(k_name)
         if key == k_data:
-            print("MATCH DETECTED, UNLOCK")
             return True
         else:
-            print("LOCKED")
             return False
             
     def close_request(self):
@@ -117,7 +130,7 @@ class Locker_Window():
         if DEBUG:
             self.root.quit()
         else:
-            call(["shutdown", "-s", "-t", "0"])
+            subprocess.call(["shutdown", "-s", "-t", "0"])
 
 if __name__ == '__main__':
     root = tk.Tk()
