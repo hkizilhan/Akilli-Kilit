@@ -12,7 +12,7 @@ DELAY_BUTTON_COUNTER_START = 5
 #   Medya Durumu  . . . . . . . . . . : Medya Bağlantısı kesildi
 #print(lines[6])  # check for "kesildi" keyword
 def check_cable_connected():
-    msg = subprocess.check_output("ipconfig")
+    msg = subprocess.check_output("ipconfig", shell=True)
     msg = msg.decode("cp857")
     lines = msg.splitlines()
     if "kesildi" in lines[6]:
@@ -160,7 +160,7 @@ class Locker_Window():
         
         if self.delay_button_counter == DELAY_BUTTON_COUNTER_START:
             # First Run
-            self.delay_button.place(x=20, rely=.5, height=100, width=150)
+            self.delay_button.place(relx=.5, rely=.5, height=100, width=150)
         
         self.delay_button['text'] = "15 Dakika Beklet...({})".format(int(self.delay_button_counter))
         
