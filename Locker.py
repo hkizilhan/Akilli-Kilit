@@ -4,25 +4,29 @@ import tkinter as tk
 
 DEBUG=True
 
-VERSION=7
+VERSION=8
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms
 DELAY_BUTTON_COUNTER_START = 5
 
-# No cable
-#   Medya Durumu  . . . . . . . . . . : Medya Bağlantısı kesildi
-#print(lines[6])  # check for "kesildi" keyword
+
 def check_cable_connected():
     msg = subprocess.check_output("ipconfig", shell=True)
     msg = msg.decode("cp857")
     lines = msg.splitlines()
-    if "kesildi" in lines[6]:
-        return False
-    else:
-        return True
-
-
+    
+    counter=0
+    for line in lines:
+        if "Ethernet ba" in line:
+            check_line = lines[counter + 2]
+            if "kesildi" in check_line:
+                return False
+        
+        counter += 1
+        
+    return True
+    
 def get_usb_serial():
     Registry = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
     RawKey = OpenKey(Registry, "SYSTEM\CurrentControlSet\Services\disk\Enum")
@@ -70,7 +74,7 @@ class Locker_Window():
     def __init__(self, root=None):
         self.root=root
         self.root.wm_attributes("-topmost", 1) # Always on top
-        self.root.geometry("800x600")
+        self.root.geometry("600x400")
         self.root.config(bg="red")
         self.delay_button = tk.Button(self.root, text="", command=self.delay_button_click)
         
