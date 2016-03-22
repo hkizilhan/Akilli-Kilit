@@ -1,8 +1,10 @@
-import hashlib, time, subprocess
+import hashlib, time, subprocess, os
 from winreg import *
 import tkinter as tk
 
 DEBUG=True
+
+VERSION=7
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms
@@ -40,15 +42,20 @@ def get_usb_key():
     key_name = ""
     key_data = ""
     
-    try:
-        f=open("D:/TCNO.txt", encoding="utf-8")
-        key_name = f.readline().splitlines()[0]
-        key_data = f.readline().splitlines()[0]
-        f.close()
-    except:
-        return (None, None)
-    
-    return (key_name, key_data)
+    drives = 'DEFGHIJKLMN'
+
+    for d in drives:
+        if os.path.exists("{}:".format(d)):
+            try:
+                f=open(d + ":/TCNO.txt", encoding="utf-8")
+                key_name = f.readline().splitlines()[0]
+                key_data = f.readline().splitlines()[0]
+                f.close()
+                return (key_name, key_data)
+            except:
+                pass
+            
+    return (None, None)
     
 def generate_key(input_str = ""):
     ser = get_usb_serial()
