@@ -2,9 +2,9 @@ import hashlib, time, subprocess, os
 from winreg import *
 import tkinter as tk
 
-DEBUG=True
+DEBUG=False
 
-VERSION=8
+VERSION=0.08
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms

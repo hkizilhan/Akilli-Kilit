@@ -1,9 +1,9 @@
 import hashlib, time
 from tkinter import *
 from tkinter import ttk
-from tkinter.filedialog import *
 from winreg import *
 
+VERSION=0.01
 
 def get_usb_serial():
     Registry = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -93,33 +93,11 @@ class App():
         self.lstOutput  = Listbox(root, height=6)
         self.lstOutput.grid(row=6, column=0, columnspan=5, sticky=E+W)        
         
-
-        #Menu Bar
-        self.menu = Menu(root)
-        root.config(menu=self.menu)
-
-        self.file = Menu(self.menu)
-
-        self.file.add_command(label = 'Open', command = self.SaveFile)
-        self.file.add_command(label = 'Exit', command = lambda:exit())
-
-        self.menu.add_cascade(label = 'File', menu = self.file)
-        
         # ******************************************
         
         self.Output_Add(get_usb_serial())
         self.txtAdSoyad.focus()
         
-
-    def SaveFile(self):
-        name = asksaveasfile(initialdir = "c:/",
-                            initialfile = "TCNO.txt",
-                              filetypes = (("Metin Dosyası", "*.txt"), ),
-                                  title = "Kaydet"
-                               )
-        print (name)
-        # Returns None if cances pressed
-        return name
     
     def btn_Temizle(self):
         self.txtAdSoyad.delete(0, END)
