@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from winreg import *
 
-VERSION=0.01
+VERSION=0.02
 
 def get_usb_serial():
     Registry = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
@@ -44,28 +44,21 @@ class App():
         
         root.minsize(500,400)
         #root.maxsize(500,400)
+        root.resizable(False, False)
         
         x = (root.winfo_screenwidth() - root.winfo_reqwidth()) / 2
         y = (root.winfo_screenheight() - root.winfo_reqheight()) / 2
         root.geometry("+%d+%d" % (x, y))
         
 
-        Title = root.title( "ET USB Hazırlayıcı")
+        Title = root.title( "ET USB Hazırlayıcı - Hakan KIZILHAN - " + str(VERSION))
 
-        root.columnconfigure(0, weight=1)
-        root.columnconfigure(1, weight=1)
-        root.columnconfigure(2, weight=1)
-        root.columnconfigure(3, weight=1)
-        root.columnconfigure(4, weight=1)
-        root.rowconfigure(0, weight=1)
-        root.rowconfigure(1, weight=1)
-        root.rowconfigure(2, weight=1)
-        root.rowconfigure(3, weight=1)
-        root.rowconfigure(4, weight=1)
-        
-        
-        self.label1 = ttk.Label(root, text ="ET USB Hazırlayıcı", foreground="blue", font=("Helvetica", 16))
-        self.label1.grid(row=0, column=0, columnspan=3, sticky=E+W)
+        for i in range(5):
+            root.columnconfigure(i, weight=1)
+            root.rowconfigure   (i, weight=1)
+
+        self.label1 = ttk.Label(root, text ="ET USB Hazırlayıcı    -    Yazan:  Hakan KIZILHAN", foreground="blue", font=("Helvetica", 16))
+        self.label1.grid(row=0, column=0, columnspan=5, sticky=E+W)
 
         self.lblAdSoyad = ttk.Label(root, text="Ad Soyad")
         self.lblAdSoyad.grid(row=1, column=0)
