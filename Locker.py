@@ -4,12 +4,14 @@ import tkinter as tk
 
 DEBUG=False
 
-VERSION=0.08
+VERSION=0.09
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms
 DELAY_BUTTON_COUNTER_START = 5
 
+ERR_NO_USB = "Usb bellekte anahtar yok.."
+ERR_NO_LAN = "Ağ kablosu takılı değil."
 
 def check_cable_connected():
     msg = subprocess.check_output("ipconfig", shell=True)
@@ -77,7 +79,10 @@ class Locker_Window():
         self.root.geometry("600x400")
         self.root.config(bg="red")
         self.delay_button = tk.Button(self.root, text="", command=self.delay_button_click)
-        
+
+        self.msg_label = tk.Label(self.root, text="ARIYOR...", font=("Helvetica", 16, "bold"), bg="red")
+        self.msg_label.place(relx=.01, rely=.01) #, height=100, width=150)
+            
         self.check_seconds = CHECK_SECONDS
         self.shutdown_seconds = 0
         self.shutdown_seconds_limit = SHUTDOWN_SECONDS_LIMIT
@@ -113,10 +118,12 @@ class Locker_Window():
         else:
             if not key_present:
                 # Reason = No USB Key
+                self.msg_label['text'] = ERR_NO_USB
                 print("LOCKED - No Usb Present")
                 self.lock(reason="no_usb")
             else:
                 # Reason = No cable Connected
+                self.msg_label['text'] = ERR_NO_LAN
                 print("LOCKED - No Cable Connected")
                 self.lock(reason="no_cable")
             
@@ -131,6 +138,7 @@ class Locker_Window():
     def lock(self, reason=None):
         self.root.deiconify()
         if reason=="no_usb":
+
             if self.usb_key_was_plugged:
                 if not self.delay_button_timer_started:
                     self.delay_button_timer_started = True
@@ -138,6 +146,7 @@ class Locker_Window():
         
 
     def unlock(self):
+        self.msg_label['text'] = ""
         self.root.withdraw()
         self.usb_key_was_plugged = True
         self.shutdown_seconds_limit = SHUTDOWN_SECONDS_LIMIT
