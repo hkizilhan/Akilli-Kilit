@@ -4,11 +4,13 @@ import tkinter as tk
 
 DEBUG=False
 
-VERSION=0.09
+VERSION=0.10
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms
 DELAY_BUTTON_COUNTER_START = 5
+KEY_PATH = None
+
 
 ERR_NO_USB = "Usb bellekte anahtar yok.."
 ERR_NO_LAN = "Ağ kablosu takılı değil."
@@ -45,22 +47,61 @@ def get_usb_serial():
     return value
 
 def get_usb_key():
+    global KEY_PATH
+
     key_name = ""
     key_data = ""
+
+    # Key previously detected
+    if KEY_PATH:
+        try:
+            if DEBUG:
+                print("Using Key Path: " + KEY_PATH)
+            
+            f=open(KEY_PATH, encoding="utf-8")
+            key_name = f.readline().splitlines()[0]
+            key_data = f.readline().splitlines()[0]
+            f.close()
+            return (key_name, key_data)
+        except:
+            pass
     
     drives = 'DEFGHIJKLMN'
 
     for d in drives:
-        if os.path.exists("{}:".format(d)):
+        if os.path.exists(d + ":"):  # ex.  d:
             try:
                 f=open(d + ":/TCNO.txt", encoding="utf-8")
                 key_name = f.readline().splitlines()[0]
                 key_data = f.readline().splitlines()[0]
                 f.close()
+
+                # cache key path for speed up next control
+                KEY_PATH=d + ":/TCNO.txt"
+
                 return (key_name, key_data)
             except:
-                pass
-            
+                # key not found in root, search sub dirs
+                for root, subFolders, files in os.walk(d + ":/"):
+                    for file in files:
+                        if file == 'TCNO.txt':
+                            KEY_PATH = os.path.abspath( os.path.join(root, file) )
+                            print("founded key:  " + KEY_PATH)
+
+                            # key file found, break
+                            try:
+                                if DEBUG:
+                                    print("Using Key Path: " + KEY_PATH)
+                                
+                                f=open(KEY_PATH, encoding="utf-8")
+                                key_name = f.readline().splitlines()[0]
+                                key_data = f.readline().splitlines()[0]
+                                f.close()
+                                return (key_name, key_data)
+                            except:
+                                pass
+
+                
     return (None, None)
     
 def generate_key(input_str = ""):
@@ -136,8 +177,11 @@ class Locker_Window():
         # self.root.after_cancel(after_id)
 
     def lock(self, reason=None):
+        global KEY_PATH
+
         self.root.deiconify()
         if reason=="no_usb":
+            KEY_PATH=None
 
             if self.usb_key_was_plugged:
                 if not self.delay_button_timer_started:

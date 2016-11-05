@@ -9,6 +9,7 @@ buildOptions = dict(packages = [],
                     optimize = 0,
                     include_files = [],
                     include_msvcr = True,
+                    build_exe = "build_GUI"
                     )
 
 base = 'Win32GUI'
@@ -18,7 +19,7 @@ executables = [
 ]
 
 setup(name='Locker Key Generator',
-      version = '0.08',
+      version = '0.02',
       description = 'Locker Key Generator',
       options = dict(build_exe = buildOptions),
       executables = executables)
