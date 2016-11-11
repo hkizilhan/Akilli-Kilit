@@ -4,7 +4,7 @@ import tkinter as tk
 
 DEBUG=False
 
-VERSION=0.10
+VERSION=0.11
 SHUTDOWN_SECONDS_LIMIT = 30
 DELAYED_SHUTDOWN_SECONDS_LIMIT = 900
 CHECK_SECONDS = 5000 # ms
@@ -121,8 +121,14 @@ class Locker_Window():
         self.root.config(bg="red")
         self.delay_button = tk.Button(self.root, text="", command=self.delay_button_click)
 
+        # Status Label
         self.msg_label = tk.Label(self.root, text="ARIYOR...", font=("Helvetica", 16, "bold"), bg="red")
-        self.msg_label.place(relx=.01, rely=.01) #, height=100, width=150)
+        self.msg_label.place(relx=.01, rely=.01)
+
+        # Version label
+        self.version_label = tk.Label(self.root, text=VERSION, font=("Helvetica", 6, "normal"), bg="red")
+        self.version_label.place(relx=.0, rely=.98)
+
             
         self.check_seconds = CHECK_SECONDS
         self.shutdown_seconds = 0
